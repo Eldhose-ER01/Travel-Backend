@@ -1,36 +1,41 @@
-const mongoose=require('mongoose')
-const destinationschema=new mongoose.Schema({
-    destination:{
-        type:String,
-        required:true
-    },
-    duration:{
-        type:String,
-        required:true
-    },
-    description:{
-        type:String,
-        required:true
-    },
-    includes:{
-        type:[String],
-        default:[]
+const mongoose = require("mongoose");
 
-    },
-    notIncludes:{
-        type:[String],
-        default:[]
-    },
-    districtname:{
-        type:String
-    },
-    ticketPrice: {
-        type: Number, 
-        required: true
-    },
-    selectedImages: {
-        type: [String], 
-        default: []
-    }
-})
-module.exports=mongoose.model('Destinations',destinationschema)
+const destinationSchema = new mongoose.Schema({
+  destination: {
+    type: String,
+    required: true
+  },
+  state: {
+   type:mongoose.Schema.Types.ObjectId,
+    ref: "State" 
+  },
+  duration: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  include: {
+    type: [String],
+    default: []
+  },
+  notIncludes: {
+    type: [String],
+    default: []
+  },
+  districtname: {
+    type: String
+  },
+  ticketPrice: {
+    type: Number,
+    required: true
+  },
+  selectedImages: {
+    type: [String],
+    default: []
+  }
+});
+
+module.exports = mongoose.model("Destination", destinationSchema); // Use singular form

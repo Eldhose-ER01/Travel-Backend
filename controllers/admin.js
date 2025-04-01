@@ -7,7 +7,6 @@ const path = require('path');
 exports.adminLogin=async(req,res)=>{
     try {
         const{email,password}=req.body.data.datas
-        console.log(req.body.data.datas);
         const Adminpassword=process.env.password
         const Adminemail=process.env.email
         const KEY = process.env.JWT_SECRET_KEY;
@@ -134,7 +133,6 @@ exports.editStateAndDistrict=async(req,res)=>{
     try {
         
         const data = JSON.parse(req.body.data);
-        console.log(JSON.parse(req.body.data))
 
         const id=data._id
         const value=await State.findById({_id:id})
@@ -163,18 +161,18 @@ exports.adddestinations=async(req,res)=>{
         
         const data = JSON.parse(req.body.data);
         
-        const{destination,duration,description,includes,notIncludes,ticketPrice,district}=data
+        const{destination,duration,description,includes,notIncludes,ticketPrice,district,districtId}=data
         const images = req.files ? req.files.map(file => file.filename) : [];
 
-        console.log(images,"imagesimages");
         
         const alldatas=new Destinations({
             destination,
             duration,
             description,
-            includes,
+            include:includes,
             notIncludes,
             ticketPrice,
+            state:districtId,
             districtname:district,
             selectedImages:images
 
@@ -201,7 +199,6 @@ exports.Finddestinations=async(req,res)=>{
             query.destination={$regex:new RegExp(searchItem,'i')}
          }
         const finddestinations=await Destinations.find(query).skip(skip).limit(limit)
-        console.log(finddestinations);
         res.status(200).json({success:true,finddestinations,totalpages,page})
         
     } catch (error) {
@@ -212,15 +209,92 @@ exports.Finddestinations=async(req,res)=>{
 exports.finddistrict=async(req,res)=>{
     try {
         const finddistrict = await State.find();
-       console.log(finddistrict);
        
+    
         
-       const datas=finddistrict.map(value=>value.districtname)
-        
-        res.status(200).json({success:true,datas,finddistrict})
+      
+        res.status(200).json({success:true,finddistrict})
         
     } catch (error) {
         res.status(500).json({success:false,message:"server error"})
 
     }
 }
+
+// In your admin controller file (controllers/admin.js)
+exports.editdestination = async (req, res) => {
+    try {
+      const {
+        id,
+        destination,
+        state,
+        duration,
+        description,
+        include,
+        notIncludes,
+        districtname,
+        ticketPrice,
+        existingImages // This should be a JSON string of existing image paths
+      } = req.body;
+  
+      // Convert stringified arrays back to arrays
+      const includeArray = include ? JSON.parse(include) : [];
+      const notIncludesArray = notIncludes ? JSON.parse(notIncludes) : [];
+      const existingImagesArray = existingImages ? JSON.parse(existingImages) : [];
+  
+      // Combine existing images with newly uploaded ones
+      const newImages = req.files ? req.files.map(file => `/Images/${file.filename}`) : [];
+      const allImages = [...existingImagesArray, ...newImages].slice(0, 3); // Limit to 3 images
+  
+      // Update the destination
+      const updatedDestination = await Destinations.findByIdAndUpdate(
+        id,
+        {
+          destination,
+          state,
+          duration,
+          description,
+          include: includeArray,
+          notIncludes: notIncludesArray,
+          districtname,
+          ticketPrice,
+          selectedImages: allImages
+        },
+        { new: true }
+      );
+  
+      if (!updatedDestination) {
+        return res.status(404).json({ success: false, message: 'Destination not found' });
+      }
+  
+      res.status(200).json({ 
+        success: true, 
+        message: 'Destination updated successfully',
+        destination: updatedDestination
+      });
+  
+    } catch (error) {
+      console.error('Error updating destination:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to update destination',
+        error: error.message 
+      });
+    }
+  };
+
+  exports.DestinationDelete=async(req,res)=>{
+    try {
+       
+        const{id}=req.body
+        await Destinations.deleteOne({id})
+        const finddata=await Destinations.find()
+        res.status(200).json({success:true ,finddestinations:finddata})
+    } catch (error) {
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to update destination',
+            error: error.message 
+          });
+    }
+  }

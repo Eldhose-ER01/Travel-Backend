@@ -39,5 +39,6 @@ adminroutes.post('/editstates', upload.single("file"), admincontroller.editState
 adminroutes.post('/adddestinations', upload.array("selectedImages", 3), admincontroller.adddestinations);
 adminroutes.get('/dstination',admincontroller.Finddestinations);
 adminroutes.get('/finddistrict',admincontroller.finddistrict)
-
+adminroutes.post('/deletedestination',admincontroller.DestinationDelete)
+adminroutes.post('/editdestination',upload.array("selectedImages", 3),admincontroller.editdestination);
 module.exports = adminroutes;
