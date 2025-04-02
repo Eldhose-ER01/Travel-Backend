@@ -57,7 +57,7 @@ exports.blockORUnblock=async(req,res)=>{
 
     }
 }
-/*-----------------Create Banners-----------*/
+/*-----------------Add state and disticts-----------*/
 exports.addStateAndDistrict=async(req,res)=>{
     try {
         
@@ -283,18 +283,21 @@ exports.editdestination = async (req, res) => {
     }
   };
 
-  exports.DestinationDelete=async(req,res)=>{
+  exports.DestinationDelete = async (req, res) => {
     try {
-       
-        const{id}=req.body
-        await Destinations.deleteOne({id})
-        const finddata=await Destinations.find()
-        res.status(200).json({success:true ,finddestinations:finddata})
+      const id  = req.query.id;
+ 
+        // Extract id from the request body
+      await Destinations.deleteOne({_id:id });  // Ensure you're using _id field for deletion
+   
+    
+      res.status(200).json({ success: true });
     } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to update destination',
-            error: error.message 
-          });
+      res.status(500).json({
+        success: false,
+        message: 'Failed to delete destination',
+        error: error.message
+      });
     }
-  }
+  };
+  

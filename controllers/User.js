@@ -100,7 +100,6 @@ const forGetOtp=async(req,res)=>{
   try {
     const {email}=req.body.data
       otp = await sendotp(email);
-      console.log(otp);
       res.status(200).json({success:true})
     }
     
@@ -163,7 +162,6 @@ const googleLogin = async (req, res) => {
       token: token,
       id: userExists._id,
     };
-    console.log(data);
     res.status(200).json({success:true,messages:"success" ,userData:data})
     }
    
@@ -216,7 +214,6 @@ const UserProfile=async(req,res)=>{
     
     const id=req.id
     const finddata=await User.findById(id)
-    console.log(finddata);
     
     res.status(200).json({success:true,finddata})
 
@@ -230,7 +227,6 @@ const UserProfile=async(req,res)=>{
 const Editprofile = async (req, res) => {
   try {
     const id = req.id; 
-    console.log(req.body,"req.body;");
     // Getting user ID from the request
     const { firstName, lastName, mobile, email } = req.body;
 
